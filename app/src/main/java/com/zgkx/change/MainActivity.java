@@ -4,6 +4,8 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
 
+import com.chtj.base_framework.FBaseTools;
+
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity";
 
