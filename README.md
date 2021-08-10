@@ -9,7 +9,9 @@ allprojects {
 }
 ```
 
-### ④ base_keepalive 服务保活处理 [![](https://jitpack.io/v/wave-chtj/BaseKeepAlive.svg)](https://jitpack.io/#wave-chtj/BaseKeepAlive)
+## 在App的build.gradle文件中添加
+
+### base_keepalive 服务保活处理 [![](https://jitpack.io/v/wave-chtj/BaseKeepAlive.svg)](https://jitpack.io/#wave-chtj/BaseKeepAlive)
 
 ```groovy
 dependencies {
