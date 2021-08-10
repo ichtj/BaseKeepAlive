@@ -18,6 +18,31 @@ dependencies {
 }
 ```
 
+
+
+### 自定义 Application
+
+```java
+//每个Module library功能描述可在页面下方查看
+//别忘了在 Manifest 中通过使用这个自定义的 Application,这里有各个library的初始化
+public class App extends Application {
+
+  @Override
+  public void onCreate() {
+    super.onCreate();
+  }
+
+  @Override
+  protected void attachBaseContext(Context base) {
+    super.attachBaseContext(base);
+    MultiDex.install(this);
+    //④ base_keepalive 服务保活处理
+    FBaseDaemon.init(base);
+  }
+}
+
+```
+
 ## ④ base_keepalive 服务保活处理
 ![image](/pic/keepalive.png)
 
