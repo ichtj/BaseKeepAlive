@@ -1,0 +1,3 @@
+rootProject.name = "BaseFramework"
+include ':app'
+include ':base_framework'
