@@ -32,33 +32,24 @@
     <application
         android:allowBackup="true"
         android:persistent="true">
-
         <!--android:exported="true" 表示可以其他进程访问-->
         <service
             android:name="com.chtj.keepalive.service.FKeepAliveService"
             android:enabled="true"
             android:exported="true"
-            android:process=":resident">
-
+            android:process=":processone">
             <intent-filter>
                 <action android:name="com.chtj.keepalive.IKeepAliveService" />
             </intent-filter>
         </service>
         <receiver
-            android:name="com.chtj.keepalive.receiver.Receiver1"
-            android:process=":resident" />
-
+            android:name="com.chtj.keepalive.receiver.CustomizeReceiver1"
+            android:process=":processone" />
         <service
-            android:name="com.chtj.keepalive.service.GuardService"
-            android:process="android.media" />
-
-
-        <service
-            android:name="com.chtj.keepalive.service.GuardService2"
-            android:process=":resident2" />
-
+            android:name="com.chtj.keepalive.service.CustomizeService2"
+            android:process=":processtwo" />
         <receiver
-            android:name="com.chtj.keepalive.receiver.Receiver2"
-            android:process="android.media" />
+            android:name="com.chtj.keepalive.receiver.CustomizeReceiver2"
+            android:process=":processtwo" />
     </application>
 </manifest>

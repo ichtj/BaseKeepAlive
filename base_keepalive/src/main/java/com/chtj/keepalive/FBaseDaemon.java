@@ -25,11 +25,10 @@ import android.os.Build;
 import android.util.Log;
 
 import com.chtj.keepalive.impl.IDaemonStrategy;
-import com.chtj.keepalive.receiver.Receiver1;
-import com.chtj.keepalive.receiver.Receiver2;
+import com.chtj.keepalive.receiver.CustomizeReceiver1;
+import com.chtj.keepalive.receiver.CustomizeReceiver2;
 import com.chtj.keepalive.service.FKeepAliveService;
-import com.chtj.keepalive.service.GuardService;
-import com.chtj.keepalive.service.GuardService2;
+import com.chtj.keepalive.service.CustomizeService2;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -58,20 +57,20 @@ public class FBaseDaemon {
                             FKeepAliveService.class.getCanonicalName()),
                     new DaemonConfigurations.LeoricConfig(
                             "android.media",
-                            GuardService.class.getCanonicalName()));
+                            CustomizeService2.class.getCanonicalName()));
+            Reflection.unseal(base);
         } else {
             //android 7.0 以下
             configurations = new DaemonConfigurations(
                     new DaemonConfigurations.LeoricConfig(
-                            base.getPackageName() + ":resident",
+                            base.getPackageName() + ":processone",
                             FKeepAliveService.class.getCanonicalName(),
-                            Receiver1.class.getCanonicalName()),
+                            CustomizeReceiver1.class.getCanonicalName()),
                     new DaemonConfigurations.LeoricConfig(
-                            base.getPackageName() + ":resident2",
-                            GuardService2.class.getCanonicalName(),
-                            Receiver2.class.getCanonicalName()));
+                            base.getPackageName() + ":processtwo",
+                            CustomizeService2.class.getCanonicalName(),
+                            CustomizeReceiver2.class.getCanonicalName()));
         }
-        Reflection.unseal(base);
         FBaseDaemon client = new FBaseDaemon(configurations);
         client.initDaemon(base);
         base.startService(new Intent(base, FKeepAliveService.class));

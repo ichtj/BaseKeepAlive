@@ -126,24 +126,35 @@ public class FileCommonTools {
      * 如果已经启动apk，则直接将apk从后台调到前台运行（类似home键之后再点击apk图标启动），如果未启动apk，则重新启动
      */
     public static void openApk(Context context, String packName) {
-        if (needStartAty(context, packName)) {
+        Log.d(TAG, "openApk: ");
+        if (isTopApp(context, packName) && checkAppExistLocal(context, packName)) {
             Intent intent = getAppOpenIntentByPackageName(context, packName);
             context.startActivity(intent);
             Log.d(TAG, "launch this apk...  packagename=" + packName);
         } else {
-            boolean isFindPkg=false;
-            PackageManager packageManager =context.getPackageManager();
-            List<PackageInfo> pinfo = packageManager.getInstalledPackages(0);
-            for (int i = 0; i < pinfo.size(); i++) {
-                if (pinfo.get(i).packageName.equalsIgnoreCase(packName)) {
-                    isFindPkg=true;
-                    break;
-                }
-            }
-            Log.d(TAG, isFindPkg?"find this packageName "+packName:" not find this packageName"+packName);
+            Log.d(TAG, " not find this packageName" + packName);
         }
     }
 
+    /**
+     * 应用是否存在设备中
+     *
+     * @param context
+     * @param packName
+     * @return
+     */
+    public static boolean checkAppExistLocal(Context context, String packName) {
+        boolean isFindPkg = false;
+        PackageManager packageManager = context.getPackageManager();
+        List<PackageInfo> pinfo = packageManager.getInstalledPackages(0);
+        for (int i = 0; i < pinfo.size(); i++) {
+            if (pinfo.get(i).packageName.equalsIgnoreCase(packName)) {
+                isFindPkg = true;
+                break;
+            }
+        }
+        return isFindPkg;
+    }
 
     /**
      * 启用其他应用中的Service
@@ -169,7 +180,7 @@ public class FileCommonTools {
      * @param packageName
      * @return
      */
-    private static boolean needStartAty(Context context, String packageName) {
+    private static boolean isTopApp(Context context, String packageName) {
         boolean isNeedStartAty = false;
         ActivityManager am = (ActivityManager) context.getSystemService("activity");
         List<ActivityManager.RunningTaskInfo> list = am.getRunningTasks(1);
@@ -180,7 +191,7 @@ public class FileCommonTools {
                 //证明应用已存在 并且已运行在前台
                 isNeedStartAty = false;
             } else {
-                //表示apk未运行在前台
+                //表示apk未运行在前台 或者包名不存在
                 isNeedStartAty = true;
             }
         }

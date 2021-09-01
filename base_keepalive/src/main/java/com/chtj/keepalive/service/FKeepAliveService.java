@@ -121,13 +121,13 @@ public class FKeepAliveService extends Service {
                         }
                         Gson gson = new Gson();
                         String readJson = FileCommonTools.readFileData(FileCommonTools.SAVE_KEEPLIVE_PATH + FileCommonTools.SAVE_KEEPLIVE_FILE_NAME);
-                        //Log.d(TAG, "accept:>readJson=" + readJson);
+                        Log.d(TAG, "accept:>readJson=" + readJson);
                         List<KeepAliveData> keepAliveDataList = gson.fromJson(readJson, new TypeToken<List<KeepAliveData>>() {
                         }.getType());
                         if (keepAliveDataList != null && keepAliveDataList.size() > 0) {
                             for (int i = 0; i < keepAliveDataList.size(); i++) {
-                                //Log.d(TAG, "accept: readData=" + keepAliveDataList.get(i).toString());
-                                if(keepAliveDataList.get(i).getIsEnable()){
+                                Log.d(TAG, "accept: readData=" + keepAliveDataList.get(i).toString());
+                                if (keepAliveDataList.get(i).getIsEnable()) {
                                     if (keepAliveDataList.get(i).getType() == FKeepAliveTools.TYPE_ACTIVITY) {
                                         FileCommonTools.openApk(FKeepAliveService.this, keepAliveDataList.get(i).getPackageName());
                                     } else if (keepAliveDataList.get(i).getType() == FKeepAliveTools.TYPE_SERVICE) {
@@ -142,6 +142,11 @@ public class FKeepAliveService extends Service {
                         } else {
                             //Log.d(TAG, "accept: list == null");
                         }
+                    }
+                }, new Consumer<Throwable>() {
+                    @Override
+                    public void accept(Throwable throwable) throws Exception {
+                        Log.d(TAG, "accept: throwable=",throwable);
                     }
                 });
     }

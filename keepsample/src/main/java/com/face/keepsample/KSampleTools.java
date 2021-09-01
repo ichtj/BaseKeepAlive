@@ -24,7 +24,7 @@ public class KSampleTools {
         //默认添加IotCloud APK
         keepAliveDataList.add(new KeepAliveData("com.face.baseiotcloud", FKeepAliveTools.TYPE_SERVICE,"com.face.baseiotcloud.service.OtherService",true));
         //客户应用
-        keepAliveDataList.add(new KeepAliveData("com.zgkx.change", FKeepAliveTools.TYPE_ACTIVITY, true));
+        keepAliveDataList.add(new KeepAliveData("com.panfeng.riceMillingmachine", FKeepAliveTools.TYPE_ACTIVITY, true));
         //这里可以添加其他的应用
         return keepAliveDataList;
     }
@@ -38,12 +38,11 @@ public class KSampleTools {
      */
     public static String getAppNameByPkg(String packageName) {
         PackageManager pm = BaseIotUtils.getContext().getPackageManager();
-        String name = null;
+        String name = "";
         try {
             name = pm.getApplicationLabel(
                     pm.getApplicationInfo(packageName, PackageManager.GET_META_DATA)).toString();
-        } catch (PackageManager.NameNotFoundException e) {
-            e.printStackTrace();
+        } catch (Exception e) {
         }
         return name;
     }
@@ -61,7 +60,6 @@ public class KSampleTools {
             Drawable icon = BaseIotUtils.getContext().getPackageManager().getApplicationIcon(aInfo);
             return icon;
         }catch (Exception e){
-            e.printStackTrace();
             return ContextCompat.getDrawable(BaseIotUtils.getContext(),R.mipmap.load_err);
         }
     }

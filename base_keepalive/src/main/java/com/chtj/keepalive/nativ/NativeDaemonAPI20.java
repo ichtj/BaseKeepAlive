@@ -1,12 +1,14 @@
 package com.chtj.keepalive.nativ;
 
 
+import com.chtj.keepalive.NativeDaemonBase;
+
 /**
  * native code to watch each other when api under 20 (contains 20)
  * @author Mars
  *
  */
-public class NativeDaemonAPI20 {
+public class NativeDaemonAPI20 extends NativeDaemonBase {
 
 	static{
 		try {

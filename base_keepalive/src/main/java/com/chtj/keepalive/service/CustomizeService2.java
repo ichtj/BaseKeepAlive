@@ -22,7 +22,7 @@ import android.content.Intent;
 import android.os.IBinder;
 import android.util.Log;
 
-public class GuardService2 extends Service{
+public class CustomizeService2 extends Service{
     private static final String TAG = "GuardService";
 
     @Override
