@@ -68,7 +68,7 @@ int find_pid_by_name(char *pid_name, int *pid_list){
 void kill_zombie_process(char* zombie_name){
     int pid_list[200];
     int total_num = find_pid_by_name(zombie_name, pid_list);
-    LOGD("zombie process name is %s, and number is %x, killing...", zombie_name, total_num);
+    //LOGD("zombie process name is %s, and number is %x, killing...", zombie_name, total_num);
     int i;
     for (i = 0; i < total_num; i ++)    {
         int retval = 0;
@@ -76,9 +76,9 @@ void kill_zombie_process(char* zombie_name){
         if (daemon_pid > 1 && daemon_pid != getpid() && daemon_pid != getppid()){
             retval = kill(daemon_pid, SIGTERM);
             if (!retval){
-                LOGD("kill zombie successfully, zombie`s pid = %x", daemon_pid);
+                //LOGD("kill zombie successfully, zombie`s pid = %x", daemon_pid);
             }else{
-                LOGE("kill zombie failed, zombie`s pid = %x", daemon_pid);
+                //LOGE("kill zombie failed, zombie`s pid = %x", daemon_pid);
             }
         }
     }
@@ -138,7 +138,7 @@ JNIEXPORT void JNICALL Java_com_chtj_keepalive_nativ_NativeDaemonAPI20_doDaemon(
 		close(pipe_fd2[0]);
 		//wait for child
 		r_num=read(pipe_fd1[0], r_buf, 100);
-		LOGE("Watch >>>>CHILD<<<< Dead !!!");
+		//LOGE("Watch >>>>CHILD<<<< Dead !!!");
 		java_callback(env, jobj, DAEMON_CALLBACK_NAME);
 	}
 }

@@ -148,7 +148,7 @@ void do_daemon(JNIEnv *env, jobject jobj, char *indicator_self_path, char *indic
 
     lock_status = lock_file(indicator_daemon_path);
     if (lock_status) {
-        LOGE("Watch >>>>DAEMON<<<<< Daed !!");
+        //LOGE("Watch >>>>DAEMON<<<<< Daed !!");
         remove(observer_self_path);// it`s important ! to prevent from deadlock
         java_callback(env, jobj, DAEMON_CALLBACK_NAME);
     }
@@ -186,10 +186,10 @@ Java_com_chtj_keepalive_nativ_NativeLeoric_doDaemon(JNIEnv *env, jobject jobj,
     char *observer_self_path = (char *) (*env)->GetStringUTFChars(env, observerSelfPath, 0);
     char *observer_daemon_path = (char *) (*env)->GetStringUTFChars(env, observerDaemonPath, 0);
 
-    LOGD("indicator_self_path >>>%s",indicator_self_path);
-    LOGD("indicator_daemon_path >>>%s",indicator_daemon_path);
-    LOGD("observer_self_path >>>%s",observer_self_path);
-    LOGD("observer_daemon_path >>>%s",observer_daemon_path);
+    //LOGD("indicator_self_path >>>%s",indicator_self_path);
+    //LOGD("indicator_daemon_path >>>%s",indicator_daemon_path);
+    //LOGD("observer_self_path >>>%s",observer_self_path);
+    //LOGD("observer_daemon_path >>>%s",observer_daemon_path);
 
 
     pid_t pid;
@@ -205,7 +205,7 @@ Java_com_chtj_keepalive_nativ_NativeLeoric_doDaemon(JNIEnv *env, jobject jobj,
             exit(0);
         }
 
-        LOGD("mypid: %d", getpid());
+        //LOGD("mypid: %d", getpid());
         const int MAX_PATH = 256;
         char indicator_self_path_child[MAX_PATH];
         char indicator_daemon_path_child[MAX_PATH];

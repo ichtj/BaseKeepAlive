@@ -36,13 +36,13 @@ int unseal0(Runtime *partialRuntime) {
 
     // TODO validate
 
-    LOGV("is_java_debuggable: %d, is_native_debuggable: %d, safe_mode: %d", is_java_debuggable,
-         is_native_debuggable, safe_mode);
-    LOGV("hidden api policy before : %d", partialRuntime->hidden_api_policy_);
-    LOGV("fingerprint: %s", partialRuntime->fingerprint_.c_str());
+    //LOGV("is_java_debuggable: %d, is_native_debuggable: %d, safe_mode: %d", is_java_debuggable,
+    //     is_native_debuggable, safe_mode);
+    //LOGV("hidden api policy before : %d", partialRuntime->hidden_api_policy_);
+    //LOGV("fingerprint: %s", partialRuntime->fingerprint_.c_str());
 
     partialRuntime->hidden_api_policy_ = EnforcementPolicy::kNoChecks;
-    LOGV("hidden api policy after: %d", partialRuntime->hidden_api_policy_);
+    //LOGV("hidden api policy after: %d", partialRuntime->hidden_api_policy_);
     return 0;
 }
 
@@ -64,11 +64,11 @@ int unseal(JNIEnv *env, jint targetSdkVersion) {
     JavaVMExt *javaVMExt = (JavaVMExt *) javaVM;
     void *runtime = javaVMExt->runtime;
 
-    LOGV("runtime ptr: %p, vmExtPtr: %p", runtime, javaVMExt);
+    //LOGV("runtime ptr: %p, vmExtPtr: %p", runtime, javaVMExt);
 
     const int MAX = 2000;
     int offsetOfVmExt = findOffset(runtime, 0, MAX, (size_t) javaVMExt);
-    LOGV("offsetOfVmExt: %d", offsetOfVmExt);
+    //LOGV("offsetOfVmExt: %d", offsetOfVmExt);
 
     if (offsetOfVmExt < 0) {
         return -1;
@@ -80,7 +80,7 @@ int unseal(JNIEnv *env, jint targetSdkVersion) {
     }
 
     int targetSdkVersionOffset = findOffset(runtime, startOffset, MAX, targetSdkVersion);
-    LOGV("target: %d", targetSdkVersionOffset);
+    //LOGV("target: %d", targetSdkVersionOffset);
 
     if (targetSdkVersionOffset < 0) {
         return -2;

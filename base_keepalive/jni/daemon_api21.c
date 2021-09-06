@@ -136,7 +136,7 @@ JNIEXPORT void JNICALL Java_com_chtj_keepalive_nativ_NativeDaemonAPI21_doDaemon(
 
 	lock_status = lock_file(indicator_daemon_path);
 	if(lock_status){
-		LOGE("Watch >>>>DAEMON<<<<< Daed !!");
+		//LOGE("Watch >>>>DAEMON<<<<< Daed !!");
 		remove(observer_self_path);// it`s important ! to prevent from deadlock
 		java_callback(env, jobj, DAEMON_CALLBACK_NAME);
 	}

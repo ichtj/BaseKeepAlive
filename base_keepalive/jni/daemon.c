@@ -105,7 +105,7 @@ int main(int argc, char *argv[]){
 		memset(r_buf,0, sizeof(r_buf));
 
 		r_num=read(pipe_fd2[0], r_buf, 100);
-		LOGE("Watch >>>>PARENT<<<< Dead !!");
+		//LOGE("Watch >>>>PARENT<<<< Dead !!");
 		int count = 0;
 		while(count < 50){
 			start_service(pkg_name, svc_name);
