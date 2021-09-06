@@ -81,11 +81,11 @@ dependencies {
     api rootProject.ext.support["appcompat-v7"]
     implementation rootProject.ext.support["constraint-layout"]
     implementation rootProject.ext.support["recyclerview-v7"]
-    implementation(rootProject.ext.dependencies["base_keepalive"]) {
-        transitive = true
-    }
+    //implementation(rootProject.ext.dependencies["base_keepalive"]) {
+    //    transitive = true
+    //}
     implementation(rootProject.ext.dependencies["base_iotutils"]) {
         transitive = true
     }
-    //implementation project(path: ':base_keepalive')
+    implementation project(path: ':base_keepalive')
 }

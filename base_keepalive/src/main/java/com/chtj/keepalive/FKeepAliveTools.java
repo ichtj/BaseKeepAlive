@@ -34,11 +34,12 @@ public class FKeepAliveTools {
 
     /**
      * 添加多个保活对象
+     *
      * @param keepAliveDataList
      * @return 执行结果
      */
     public static CommonValue addMoreData(List<KeepAliveData> keepAliveDataList) {
-        Gson gson=new Gson();
+        Gson gson = new Gson();
         File file = new File(FileCommonTools.SAVE_KEEPLIVE_PATH);
         if (!file.exists()) {
             file.mkdir();
@@ -85,6 +86,31 @@ public class FKeepAliveTools {
             }
         }
         return toWrite(keepAliveData, keepAliveDataList, gson);
+    }
+
+    /**
+     * 判断需要保活的应用界面是否存在
+     *
+     * @param packageName 需要去判断的包名
+     * @return 是否已经添加过
+     */
+    public static boolean isAddedAty(String packageName) {
+        Gson gson = new Gson();
+        String readJson = FileCommonTools.readFileData(FileCommonTools.SAVE_KEEPLIVE_PATH + FileCommonTools.SAVE_KEEPLIVE_FILE_NAME);
+        List<KeepAliveData> keepAliveDataList = gson.fromJson(readJson, new TypeToken<List<KeepAliveData>>() {
+        }.getType());
+        if (keepAliveDataList != null && keepAliveDataList.size() > 0) {
+            boolean isExist = false;
+            for (KeepAliveData kData : keepAliveDataList) {
+                if (kData.getType() == TYPE_ACTIVITY && kData.getPackageName().equals(packageName)) {
+                    //出现这种情况,应判断为重复添加 告知重复即可 避免因为重复添加导致无法配合界面应用的启用/禁用保活按钮
+                    isExist = true;
+                    break;
+                }
+            }
+            return isExist;
+        }
+        return false;
     }
 
 

@@ -12,7 +12,8 @@ public enum CommonValue {
     ETH_SECURITY_ERR(8, "android.uid.system未添加"),
     ETH_IPCHECK_ERR(9, "ip,mask,dns,getway等地址校验失败"),
     ETH_OTHER_DEVICES(10, "目前不适配此设备"),
-    CMD_READ_ONLY(11, "只读系统");
+    CMD_READ_ONLY(11, "只读系统"),
+    KL_ACTIVITY_REPEAT(12, "ACTIVITY重复添加");
 
     int type;
     String remarks;
