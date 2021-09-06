@@ -132,7 +132,7 @@ public class FileCommonTools {
             context.startActivity(intent);
             Log.d(TAG, "launch this apk...  packagename=" + packName);
         } else {
-            Log.d(TAG, " not find this packageName" + packName);
+            Log.d(TAG, " not find this packageName or Already opened this app =" + packName);
         }
     }
 
