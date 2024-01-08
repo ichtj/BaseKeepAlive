@@ -1,10 +1,12 @@
-package com.chtj.keepalive;
+package com.chtj.keepalive.service;
 
+import android.text.TextUtils;
 import android.util.Log;
 
+import com.chtj.keepalive.FileCommonTools;
+import com.chtj.keepalive.ShellUtils;
 import com.chtj.keepalive.entity.CommonValue;
 import com.chtj.keepalive.entity.KeepAliveData;
-import com.chtj.keepalive.service.FKeepAliveService;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -20,9 +22,11 @@ import java.util.List;
  * ----将src/main/aidl目录复制到自己的项目中，然后初始化后调用
  */
 public class FKeepAliveTools {
-
-
-    private static final String TAG = "FKeepAliveTools";
+    private static final String TAG = FKeepAliveTools.class.getSimpleName();
+    /**
+     * 总开关状态
+     */
+    public static final String PROP_ALLENABLE_KEY = "persist.sys.alive_enable";
     /**
      * 保活的类型为Activity
      */
@@ -32,6 +36,17 @@ public class FKeepAliveTools {
      */
     public static final int TYPE_SERVICE = 1;
 
+    public static final String FLAG_ISFIRSTINIT = "isFirstInit";
+
+    /**
+     * 一键总开关状态
+     */
+    public static boolean getEableStatus() {
+        ShellUtils.CommandResult commandResult = ShellUtils.execCommand("getprop " + PROP_ALLENABLE_KEY + "  ", true);
+        return commandResult.result == 0 && !TextUtils.isEmpty(commandResult.successMsg) && commandResult.successMsg.contains("true");
+    }
+
+
     /**
      * 添加多个保活对象
      *
@@ -39,21 +54,10 @@ public class FKeepAliveTools {
      * @return 执行结果
      */
     public static CommonValue addMoreData(List<KeepAliveData> keepAliveDataList) {
+        Log.d(TAG, "addMoreData: keepAliveDataList>>" + keepAliveDataList.toString());
         Gson gson = new Gson();
-        File file = new File(FileCommonTools.SAVE_KEEPLIVE_PATH);
-        if (!file.exists()) {
-            file.mkdir();
-        }
-        file = new File(FileCommonTools.SAVE_KEEPLIVE_PATH + FileCommonTools.SAVE_KEEPLIVE_FILE_NAME);
-        if (!file.exists()) {
-            try {
-                file.createNewFile();
-            } catch (Exception e) {
-                e.printStackTrace();
-                Log.e(TAG, "errMeg:" + e.getMessage());
-            }
-        }
-        boolean isWrite = FileCommonTools.writeFileData(FileCommonTools.SAVE_KEEPLIVE_PATH + FileCommonTools.SAVE_KEEPLIVE_FILE_NAME, gson.toJson(keepAliveDataList), true);
+        FileCommonTools.isNeedCreateFile();
+        boolean isWrite = FileCommonTools.writeFileData(gson.toJson(keepAliveDataList), true);
         if (!isWrite) {
             return CommonValue.KL_FILE_WRITE_ERR;
         } else {
@@ -70,16 +74,28 @@ public class FKeepAliveTools {
      * @return 是否执行成功
      */
     public static CommonValue addActivity(KeepAliveData keepAliveData) {
+        Log.d(TAG, "addActivity: keepAliveData>>" + keepAliveData.toString());
         Gson gson = new Gson();
+        List<KeepAliveData> keepAliveDataList = new ArrayList<>();
         keepAliveData.setServiceName("");
-        String readJson = FileCommonTools.readFileData(FileCommonTools.SAVE_KEEPLIVE_PATH + FileCommonTools.SAVE_KEEPLIVE_FILE_NAME);
-        List<KeepAliveData> keepAliveDataList = gson.fromJson(readJson, new TypeToken<List<KeepAliveData>>() {
-        }.getType());
+        try {
+            String readJson = FileCommonTools.readFileData();
+            Log.d(TAG, "addActivity: readJson>>" + readJson);
+            keepAliveDataList = gson.fromJson(readJson, new TypeToken<List<KeepAliveData>>() {
+            }.getType());
+        } catch (Throwable throwable) {
+            Log.e(TAG, "addActivity: ", throwable);
+        }
         if (keepAliveDataList != null && keepAliveDataList.size() > 0) {
             Iterator<KeepAliveData> it = keepAliveDataList.iterator();
             while (it.hasNext()) {
                 KeepAliveData keepData = it.next();
                 if (keepData.getType() == TYPE_ACTIVITY) {
+                    if (keepAliveData.getPackageName().equals(keepData.getPackageName()) && keepAliveData.getIsEnable() == keepData.getIsEnable()) {
+                        /*这里说明添加重复的记录*/
+                        Log.d(TAG, "addActivity: exist same pkg info");
+                        return CommonValue.EXEU_COMPLETE;
+                    }
                     //如果记录中存在Activity的记录 则清除
                     it.remove();
                 }
@@ -96,7 +112,7 @@ public class FKeepAliveTools {
      */
     public static boolean isAddedAty(String packageName) {
         Gson gson = new Gson();
-        String readJson = FileCommonTools.readFileData(FileCommonTools.SAVE_KEEPLIVE_PATH + FileCommonTools.SAVE_KEEPLIVE_FILE_NAME);
+        String readJson = FileCommonTools.readFileData();
         List<KeepAliveData> keepAliveDataList = gson.fromJson(readJson, new TypeToken<List<KeepAliveData>>() {
         }.getType());
         if (keepAliveDataList != null && keepAliveDataList.size() > 0) {
@@ -122,10 +138,16 @@ public class FKeepAliveTools {
      * @return 是否执行成功
      */
     public static CommonValue addService(KeepAliveData keepAliveData) {
+        Log.d(TAG, "addService: keepAliveData>>" + keepAliveData.toString());
+        List<KeepAliveData> keepAliveDataList = new ArrayList<>();
         Gson gson = new Gson();
-        String readJson = FileCommonTools.readFileData(FileCommonTools.SAVE_KEEPLIVE_PATH + FileCommonTools.SAVE_KEEPLIVE_FILE_NAME);
-        List<KeepAliveData> keepAliveDataList = gson.fromJson(readJson, new TypeToken<List<KeepAliveData>>() {
-        }.getType());
+        try {
+            String readJson = FileCommonTools.readFileData();
+            keepAliveDataList = gson.fromJson(readJson, new TypeToken<List<KeepAliveData>>() {
+            }.getType());
+        } catch (Throwable throwable) {
+            Log.e(TAG, "addService: ", throwable);
+        }
         if (keepAliveDataList != null && keepAliveDataList.size() > 0) {
             boolean isFind = false;
             for (int i = 0; i < keepAliveDataList.size(); i++) {
@@ -153,26 +175,14 @@ public class FKeepAliveTools {
      * @param keepAliveData     当前需要添加的记录
      * @param keepAliveDataList 以前添加的记录
      */
-    private static CommonValue toWrite(KeepAliveData
-                                               keepAliveData, List<KeepAliveData> keepAliveDataList, Gson gson) {
+    private static CommonValue toWrite(KeepAliveData keepAliveData, List<KeepAliveData> keepAliveDataList, Gson gson) {
         if (keepAliveDataList == null) {
             keepAliveDataList = new ArrayList<>();
         }
+        Log.d(TAG, "toWrite: keepAliveData>>" + keepAliveData.toString() + ",keepAliveDataList>>" + keepAliveDataList.toString());
         keepAliveDataList.add(keepAliveData);
-        File file = new File(FileCommonTools.SAVE_KEEPLIVE_PATH);
-        if (!file.exists()) {
-            file.mkdir();
-        }
-        file = new File(FileCommonTools.SAVE_KEEPLIVE_PATH + FileCommonTools.SAVE_KEEPLIVE_FILE_NAME);
-        if (!file.exists()) {
-            try {
-                file.createNewFile();
-            } catch (Exception e) {
-                e.printStackTrace();
-                Log.e(TAG, "errMeg:" + e.getMessage());
-            }
-        }
-        boolean isWrite = FileCommonTools.writeFileData(FileCommonTools.SAVE_KEEPLIVE_PATH + FileCommonTools.SAVE_KEEPLIVE_FILE_NAME, gson.toJson(keepAliveDataList), true);
+        FileCommonTools.isNeedCreateFile();
+        boolean isWrite = FileCommonTools.writeFileData(gson.toJson(keepAliveDataList), true);
         if (!isWrite) {
             return CommonValue.KL_FILE_WRITE_ERR;
         } else {
@@ -182,38 +192,26 @@ public class FKeepAliveTools {
     }
 
     /**
-     * 清除所有的记录
-     */
-    public static CommonValue clearKeepLive() {
-        File file = new File(FileCommonTools.SAVE_KEEPLIVE_PATH + FileCommonTools.SAVE_KEEPLIVE_FILE_NAME);
-        if (file.exists()) {
-            return file.delete() ? CommonValue.EXEU_COMPLETE : CommonValue.KL_FILE_DEL_ERR;
-        } else {
-            return CommonValue.KL_DATA_ISNULL;
-        }
-    }
-
-
-    /**
      * 获取全部的记录Activity+Service
      *
      * @return
      */
     public static List<KeepAliveData> getKeepLive() {
-        Gson gson = new Gson();
-        String readJson = FileCommonTools.readFileData(FileCommonTools.SAVE_KEEPLIVE_PATH + FileCommonTools.SAVE_KEEPLIVE_FILE_NAME);
-        List<KeepAliveData> keepAliveDataList = gson.fromJson(readJson, new TypeToken<List<KeepAliveData>>() {
-        }.getType());
-        return keepAliveDataList;
+        try {
+            Gson gson = new Gson();
+            String readJson = FileCommonTools.readFileData();
+            List<KeepAliveData> keepAliveDataList = gson.fromJson(readJson, new TypeToken<List<KeepAliveData>>() {
+            }.getType());
+            return keepAliveDataList;
+        } catch (Throwable throwable) {
+            return null;
+        }
     }
-
 
     /**
      * 关闭保活服务
      */
     public static void stopKeepLive() {
-        FKeepAliveService.isKeepAliveStatus = false;
+        FKeepAlivePublicTools.setKeepAliveStatus(false);
     }
-
-
 }

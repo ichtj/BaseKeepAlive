@@ -87,11 +87,11 @@ private static final String TAG = "CrashHandler";
             return false;
         }
 
-        collectDeviceInfo(BaseIotUtils.getContext());
+        //collectDeviceInfo(BaseIotUtils.getContext());
 
         addCustomInfo();
 
-        saveCrashInfo2File(ex);
+        //saveCrashInfo2File(ex);
         return true;
     }
 

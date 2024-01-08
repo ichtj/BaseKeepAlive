@@ -29,6 +29,7 @@ import java.lang.reflect.InvocationTargetException;
  *
  */
 public class DaemonStrategyXiaomi implements IDaemonStrategy {
+	private static final String TAG = DaemonStrategyXiaomi.class.getSimpleName();
 	private final String BINARY_DEST_DIR_NAME 	= "bin";
 	private final String BINARY_FILE_NAME		= "daemon";
 	
@@ -38,11 +39,13 @@ public class DaemonStrategyXiaomi implements IDaemonStrategy {
 	
 	@Override
 	public boolean onInit(Context context) {
+		//Log.d(TAG, "onInit: ");
 		return installBinary(context);
 	}
 
 	@Override
 	public void onPersistentCreate(final Context context, final DaemonConfigurations configs) {
+		//Log.d(TAG, "onPersistentCreate: ");
 		initAmsBinder();
 		initServiceParcel(context, configs.DAEMON_ASSISTANT_CONFIG.serviceName);
 		Thread t = new Thread(){

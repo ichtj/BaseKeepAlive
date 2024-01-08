@@ -1,28 +1,31 @@
 package com.face.keepsample;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.Manifest;
-import android.app.ActivityManager;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.RadioButton;
 import android.widget.TextView;
 
-import com.chtj.keepalive.FKeepAliveTools;
+import com.chtj.keepalive.FileCommonTools;
 import com.chtj.keepalive.entity.CommonValue;
 import com.chtj.keepalive.entity.KeepAliveData;
+import com.chtj.keepalive.service.FKeepAliveTools;
+import com.face_chtj.base_iotutils.KLog;
 import com.face_chtj.base_iotutils.PermissionsUtils;
+import com.face_chtj.base_iotutils.ShellUtils;
 import com.face_chtj.base_iotutils.ToastUtils;
 
 import java.util.ArrayList;
@@ -33,7 +36,7 @@ import java.util.List;
  * 参考app Module中路径com.wave_chtj.example.keeplive.KeepLiveAty中的使用
  * 注意复制相应的aidl和实体类
  */
-public class IndexActivity extends BaseActivity implements View.OnClickListener {
+public class IndexActivity extends BaseActivity implements View.OnClickListener, CompoundButton.OnCheckedChangeListener {
     private static final String TAG = "KeepAliveActivity";
     public static final int REQUEST_APP_CODE = 1100;//选择APP
     public static final int REQUEST_SERVICE_CODE = 1101;//选择Service
@@ -41,27 +44,29 @@ public class IndexActivity extends BaseActivity implements View.OnClickListener 
     private EditText etpkg2;
     private EditText etServiceName;
     private TextView tvTime;
-    private Button btn_to_select;
-    private Button btn_select_service;
     private RecyclerView rvSaveList;
     private IndexAdapter indexAdapter;
-
+    private RadioButton rbAllEnable;
+    private RadioButton rbAllDisable;
     private CountDownTimer mTimer;
+    private List<SimpleKeepAlive> simpleKeepAlives = new ArrayList<>();
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_index);
+        rbAllEnable = findViewById(R.id.rbAllEnable);
+        rbAllDisable = findViewById(R.id.rbAllDisable);
+        rbAllEnable.setOnCheckedChangeListener(this);
+        rbAllDisable.setOnCheckedChangeListener(this);
         etpkg = findViewById(R.id.etpkg);
         tvTime = findViewById(R.id.tvTime);
         rvSaveList = findViewById(R.id.rvSaveList);
         etpkg2 = findViewById(R.id.etpkg2);
-        btn_to_select = findViewById(R.id.btn_select_app);
-        btn_select_service = findViewById(R.id.btn_select_service);
         etServiceName = findViewById(R.id.etServiceName);
         PermissionsUtils.with(this).addPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE).addPermission(Manifest.permission.READ_EXTERNAL_STORAGE).initPermission();
 
-        indexAdapter = new IndexAdapter(new ArrayList<>(), this);
+        indexAdapter = new IndexAdapter(simpleKeepAlives, this);
         rvSaveList.setLayoutManager(new LinearLayoutManager(getApplicationContext(), LinearLayoutManager.VERTICAL, false));
         rvSaveList.setAdapter(indexAdapter);
         //启动一个后台服务添加默认的Service
@@ -73,16 +78,11 @@ public class IndexActivity extends BaseActivity implements View.OnClickListener 
 
     public void getData() {
         List<KeepAliveData> keepAliveDataList = FKeepAliveTools.getKeepLive();
-        List<SimpleKeepAlive> simpleKeepAlives = new ArrayList<>();
+        simpleKeepAlives = new ArrayList<>();
         if (keepAliveDataList != null && keepAliveDataList.size() > 0) {
             for (int i = 0; i < keepAliveDataList.size(); i++) {
                 String pkgName = keepAliveDataList.get(i).getPackageName();
-                simpleKeepAlives.add(new SimpleKeepAlive(pkgName
-                        , keepAliveDataList.get(i).getType()
-                        , keepAliveDataList.get(i).getServiceName()
-                        , keepAliveDataList.get(i).getIsEnable()
-                        , KSampleTools.getAppIconByPkg(pkgName)
-                        , KSampleTools.getAppNameByPkg(pkgName)));
+                simpleKeepAlives.add(new SimpleKeepAlive(pkgName, keepAliveDataList.get(i).getType(), keepAliveDataList.get(i).getServiceName(), keepAliveDataList.get(i).getIsEnable(), KSampleTools.getAppIconByPkg(pkgName), KSampleTools.getAppNameByPkg(pkgName)));
             }
         }
         indexAdapter.setList(simpleKeepAlives);
@@ -92,6 +92,12 @@ public class IndexActivity extends BaseActivity implements View.OnClickListener 
     protected void onResume() {
         super.onResume();
         getData();
+        boolean enableStatus=FKeepAliveTools.getEableStatus();
+        if(enableStatus){
+            rbAllEnable.setChecked(true);
+        }else{
+            rbAllDisable.setChecked(true);
+        }
     }
 
     /**
@@ -177,7 +183,7 @@ public class IndexActivity extends BaseActivity implements View.OnClickListener 
                 builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        CommonValue commonValue2 = FKeepAliveTools.clearKeepLive();
+                        CommonValue commonValue2 = FileCommonTools.clearKeepLive();
                         if (commonValue2 == CommonValue.EXEU_COMPLETE) {
                             ToastUtils.success("清除成功！");
                         } else {
@@ -240,5 +246,21 @@ public class IndexActivity extends BaseActivity implements View.OnClickListener 
     protected void onDestroy() {
         super.onDestroy();
         stopCountDown();
+    }
+
+    @Override
+    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+        if(isChecked&&buttonView.isPressed()){
+            List<KeepAliveData> keepAliveDatas = new ArrayList<>();
+            boolean isAllOpen=buttonView.getId() == R.id.rbAllEnable;
+            for (int i = 0; i < simpleKeepAlives.size(); i++) {
+                keepAliveDatas.add(new KeepAliveData(simpleKeepAlives.get(i).getPackageName(), simpleKeepAlives.get(i).getType(), simpleKeepAlives.get(i).getServiceName(), simpleKeepAlives.get(i).getIsEnable()));
+            }
+            FileCommonTools.clearKeepLive();
+            FKeepAliveTools.addMoreData(keepAliveDatas);
+            ShellUtils.CommandResult commandResult = ShellUtils.execCommand("setprop "+FKeepAliveTools.PROP_ALLENABLE_KEY+" "+isAllOpen, true);
+            KLog.d("onCheckedChanged>>result>>" + commandResult.result + ",succMeg>>" + commandResult.successMsg + ",errMeg>>" + commandResult.errorMsg);
+            getData();
+        }
     }
 }

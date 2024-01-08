@@ -3,12 +3,17 @@
     android:sharedUserId="android.uid.system"
     package="com.face.keepsample">
     <!--android:sharedUserId="android.uid.system"-->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <!--文件写入权限-->
     <uses-permission android:name="android.permission.DISABLE_KEYGUARD" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <!--文件读取权限-->
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.INSTALL_PACKAGES"/>
+    <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES"/>
+    <uses-permission android:name="android.permission.INTERACT_ACROSS_USERS_FULL" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
 
     <application
         android:name=".KSampleApplication"
@@ -21,6 +26,7 @@
         android:theme="@style/AppTheme">
         <activity
             android:name=".IndexActivity"
+            android:launchMode="singleTop"
             android:windowSoftInputMode="stateHidden|adjustUnspecified">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -36,10 +42,12 @@
                 <action android:name="android.intent.action.BOOT_COMPLETED"></action>
             </intent-filter>
         </receiver>
-
         <activity android:name=".SelectAppActivity" />
         <activity android:name=".SelectServiceActivity" />
         <service android:name=".KSampleService" />
+        <!--中通业务 使用时请放开-->
+        <service android:name=".ZtKeepAliveService">
+        </service>
     </application>
 
 </manifest>

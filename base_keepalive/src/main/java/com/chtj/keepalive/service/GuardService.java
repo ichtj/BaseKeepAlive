@@ -15,26 +15,21 @@
  * limitations under the License.
  */
 
-package com.chtj.keepalive.nativ;
+package com.chtj.keepalive.service;
 
-import android.util.Log;
+import android.app.Service;
+import android.content.Intent;
+import android.os.IBinder;
 
-import com.chtj.keepalive.impl.IDaemonStrategy;
+public class GuardService extends Service{
 
-public class NativeLeoric {
-
-    static {
-        try {
-            System.loadLibrary("leoric");
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+    @Override
+    public IBinder onBind(Intent intent) {
+        return null;
     }
 
-    public native void doDaemon(String indicatorSelfPath, String indicatorDaemonPath, String observerSelfPath, String observerDaemonPath);
-
-    public void onDaemonDead() {
-        Log.d(NativeLeoric.class.getSimpleName(), "onDaemonDead: ");
-        IDaemonStrategy.Fetcher.fetchStrategy().onDaemonDead();
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        return Service.START_NOT_STICKY;
     }
 }

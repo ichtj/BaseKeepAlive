@@ -219,6 +219,40 @@
                     android:textSize="17pt" />
             </LinearLayout>
 
+            <RadioGroup
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="right"
+                android:orientation="horizontal"
+                android:padding="10pt">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="8pt"
+                    android:textColor="@color/black"
+                    android:layout_gravity="center"
+                    android:text="总开关：" />
+
+                <RadioButton
+                    android:id="@+id/rbAllEnable"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginRight="15pt"
+                    android:textColor="@color/black"
+                    android:checked="true"
+                    android:text="一键开启" />
+
+                <RadioButton
+                    android:id="@+id/rbAllDisable"
+                    android:layout_width="wrap_content"
+                    android:textColor="@color/black"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:text="一键关闭" />
+            </RadioGroup>
+
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rvSaveList"
                 android:layout_width="match_parent"

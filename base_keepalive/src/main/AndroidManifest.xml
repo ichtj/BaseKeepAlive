@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    android:targetSandboxVersion="1"
     package="com.chtj.keepalive">
 
     <uses-permission
@@ -32,12 +33,26 @@
     <application
         android:allowBackup="true"
         android:persistent="true">
-        <!--android:exported="true" 表示可以其他进程访问-->
+
         <service
-            android:name="com.chtj.keepalive.service.FKeepAliveService"
+            android:name="com.chtj.keepalive.service.FKeepAliveHighService"
             android:enabled="true"
             android:exported="true"
-            android:process=":processone">
+            android:process=":resident" >
+            <intent-filter>
+                <action android:name="com.chtj.keepalive.IKeepAliveService" />
+            </intent-filter>
+        </service>
+        <service android:name="com.chtj.keepalive.service.GuardService"
+            android:enabled="true"
+            android:exported="true"
+            android:process="android.media"/>
+
+        <service
+            android:name="com.chtj.keepalive.service.FKeepAliveLowService"
+            android:enabled="true"
+            android:exported="true"
+            android:process=":processone" >
             <intent-filter>
                 <action android:name="com.chtj.keepalive.IKeepAliveService" />
             </intent-filter>

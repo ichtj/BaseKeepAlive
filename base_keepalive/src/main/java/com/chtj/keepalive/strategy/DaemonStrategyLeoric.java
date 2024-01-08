@@ -37,9 +37,8 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
 
-public class DaemonStrategy24 implements IDaemonStrategy {
-
-    private static final String TAG = "DaemonStrategy24";
+public class DaemonStrategyLeoric implements IDaemonStrategy {
+    private static final String TAG = DaemonStrategyLeoric.class.getSimpleName();
 
     private final static String INDICATOR_DIR_NAME = "indicators";
     private final static String INDICATOR_PERSISTENT_FILENAME = "indicator_p";
@@ -54,11 +53,13 @@ public class DaemonStrategy24 implements IDaemonStrategy {
 
     @Override
     public boolean onInit(Context context) {
+        //Log.d(TAG, "onInit: ");
         return initIndicatorFiles(context);
     }
 
     @Override
     public void onPersistentCreate(final Context context, DaemonConfigurations configs) {
+        //Log.d(TAG, "onPersistentCreate: ");
         initAmsBinder();
         initServiceParcel(context, configs.DAEMON_ASSISTANT_CONFIG.serviceName);
         startServiceByAmsBinder();
@@ -67,17 +68,15 @@ public class DaemonStrategy24 implements IDaemonStrategy {
             @Override
             public void run() {
                 File indicatorDir = context.getDir(INDICATOR_DIR_NAME, Context.MODE_PRIVATE);
+                Log.d(TAG, "run: indicatorDir>>"+indicatorDir.toString());
                 new NativeLeoric().doDaemon(
                         new File(indicatorDir, INDICATOR_PERSISTENT_FILENAME).getAbsolutePath(),
                         new File(indicatorDir, INDICATOR_DAEMON_ASSISTANT_FILENAME).getAbsolutePath(),
                         new File(indicatorDir, OBSERVER_PERSISTENT_FILENAME).getAbsolutePath(),
                         new File(indicatorDir, OBSERVER_DAEMON_ASSISTANT_FILENAME).getAbsolutePath());
             }
-
-            ;
         };
         t.start();
-
     }
 
     @Override

@@ -1,15 +1,15 @@
 package com.face.keepsample;
 
 import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
 
 import androidx.core.content.ContextCompat;
 
-import com.chtj.keepalive.FKeepAliveTools;
 import com.chtj.keepalive.entity.KeepAliveData;
+import com.chtj.keepalive.service.FKeepAliveTools;
 import com.face_chtj.base_iotutils.BaseIotUtils;
-import com.face_chtj.base_iotutils.KLog;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,12 +21,7 @@ public class KSampleTools {
      */
     public static List<KeepAliveData> getDefaultInitData() {
         List<KeepAliveData> keepAliveDataList = new ArrayList<>();
-        //默认添加IotCloud APK
-        keepAliveDataList.add(new KeepAliveData("com.face.baseiotcloud", FKeepAliveTools.TYPE_SERVICE,"com.face.baseiotcloud.service.OtherService",true));
-        //客户应用
-        //keepAliveDataList.add(new KeepAliveData("com.panfeng.riceMillingmachine", FKeepAliveTools.TYPE_ACTIVITY, true));
-        keepAliveDataList.add(new KeepAliveData("com.android.gallery3d", FKeepAliveTools.TYPE_ACTIVITY, true));
-        //这里可以添加其他的应用
+        keepAliveDataList.add(new KeepAliveData("com.face.baseiotcloud", FKeepAliveTools.TYPE_SERVICE,"com.face.baselib.service.OtherService",true));
         return keepAliveDataList;
     }
 
@@ -38,14 +33,13 @@ public class KSampleTools {
      * @return 返回包名所对应的应用程序的名称。
      */
     public static String getAppNameByPkg(String packageName) {
-        PackageManager pm = BaseIotUtils.getContext().getPackageManager();
-        String name = "";
         try {
-            name = pm.getApplicationLabel(
+            PackageManager pm = BaseIotUtils.getContext().getPackageManager();
+            return pm.getApplicationLabel(
                     pm.getApplicationInfo(packageName, PackageManager.GET_META_DATA)).toString();
         } catch (Exception e) {
+            return "";
         }
-        return name;
     }
 
     /**
@@ -58,11 +52,22 @@ public class KSampleTools {
     public static Drawable getAppIconByPkg(String packageName) {
         try {
             ApplicationInfo aInfo =BaseIotUtils.getContext(). getPackageManager().getApplicationInfo(packageName,PackageManager.GET_META_DATA);
-            Drawable icon = BaseIotUtils.getContext().getPackageManager().getApplicationIcon(aInfo);
-            return icon;
+            return BaseIotUtils.getContext().getPackageManager().getApplicationIcon(aInfo);
         }catch (Exception e){
             return ContextCompat.getDrawable(BaseIotUtils.getContext(),R.mipmap.load_err);
         }
     }
 
+    public static boolean isAvilible(String packageName){
+        final PackageManager packageManager = BaseIotUtils.getContext().getPackageManager();
+        // 获取所有已安装程序的包信息
+        List<PackageInfo> pinfo = packageManager.getInstalledPackages(0);
+        for (int i = 0; i < pinfo.size(); i++) {
+            // 循环判断是否存在指定包名
+            if (pinfo.get(i).packageName.equalsIgnoreCase(packageName)) {
+                return true;
+            }
+        }
+        return false;
+    }
 }

@@ -56,7 +56,6 @@ public class Reflection {
             Method exemptAll = bootstrapClass.getDeclaredMethod("exemptAll");
             return  (boolean) exemptAll.invoke(null);
         } catch (Throwable e) {
-            e.printStackTrace();
             return false;
         } finally {
             if (code.exists()) {

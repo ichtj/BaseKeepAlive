@@ -8,14 +8,13 @@ import android.util.Log;
 
 import androidx.annotation.Nullable;
 
-import com.chtj.keepalive.FKeepAliveTools;
 import com.chtj.keepalive.entity.KeepAliveData;
+import com.chtj.keepalive.service.FKeepAliveTools;
 
 import java.util.List;
 
 public class KSampleService extends Service {
     private static final String TAG = KSampleService.class.getSimpleName();
-
     Handler handler = new Handler();
 
     @Nullable
@@ -27,14 +26,18 @@ public class KSampleService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
-        handler.postDelayed(runnable, 8000);
+        boolean isFirstInit=SPUtils.getBoolean(this,FKeepAliveTools.FLAG_ISFIRSTINIT,true);
+        if(isFirstInit){
+            handler.postDelayed(runnable, 5000);
+        }
     }
 
-    Runnable runnable = new Runnable() {
+    final Runnable runnable = new Runnable() {
         @Override
         public void run() {
             //添加一些默认的数据
             List<KeepAliveData> keepAliveDataList = KSampleTools.getDefaultInitData();
+            Log.d(TAG, "run: keepAliveDataList.size >> "+keepAliveDataList.size());
             for (int i = 0; i < keepAliveDataList.size(); i++) {
                 if (keepAliveDataList.get(i).getType() == FKeepAliveTools.TYPE_ACTIVITY) {
                     boolean isAdded=FKeepAliveTools.isAddedAty(keepAliveDataList.get(i).getPackageName());
@@ -47,7 +50,7 @@ public class KSampleService extends Service {
                     FKeepAliveTools.addService(keepAliveDataList.get(i));
                 }
             }
-            SPUtils.putBoolean(KSampleService.this, "isFirstInit", false);
+            SPUtils.putBoolean(KSampleService.this, FKeepAliveTools.FLAG_ISFIRSTINIT, false);
             stopService(new Intent(KSampleService.this, KSampleService.class));
         }
     };

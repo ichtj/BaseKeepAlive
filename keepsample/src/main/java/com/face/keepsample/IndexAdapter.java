@@ -2,7 +2,6 @@ package com.face.keepsample;
 
 import android.content.Context;
 import android.content.DialogInterface;
-import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,13 +15,11 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.chtj.keepalive.FKeepAliveTools;
-import com.chtj.keepalive.entity.CommonValue;
+import com.chtj.keepalive.FileCommonTools;
 import com.chtj.keepalive.entity.KeepAliveData;
-import com.face_chtj.base_iotutils.BaseIotUtils;
+import com.chtj.keepalive.service.FKeepAliveTools;
 import com.face_chtj.base_iotutils.KLog;
 import com.face_chtj.base_iotutils.StringUtils;
-import com.face_chtj.base_iotutils.ToastUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -112,7 +109,7 @@ public class IndexAdapter extends RecyclerView.Adapter<IndexAdapter.IndexViewHol
         for (int i = 0; i < list.size(); i++) {
             keepAliveDataList.add(new KeepAliveData(list.get(i).getPackageName(), list.get(i).getType(), list.get(i).getServiceName(), list.get(i).getIsEnable()));
         }
-        FKeepAliveTools.clearKeepLive();
+        FileCommonTools.clearKeepLive();
         FKeepAliveTools.addMoreData(keepAliveDataList);
     }
 

@@ -27,7 +27,7 @@ import java.io.InputStream;
  *
  */
 public class DaemonStrategyUnder21 implements IDaemonStrategy {
-	private static final String TAG = "DaemonStrategyUnder21";
+	private static final String TAG = DaemonStrategyUnder21.class.getSimpleName();
 	private final String BINARY_DEST_DIR_NAME 	= "bin";
 	private final String BINARY_FILE_NAME		= "daemon";
 	
@@ -90,7 +90,6 @@ public class DaemonStrategyUnder21 implements IDaemonStrategy {
 	private boolean installBinary(Context context){
 		String binaryDirName = null;
 		String abi = Build.CPU_ABI;
-		Log.d(TAG, "installBinary: CPU_ABI="+abi);
 		if (abi.startsWith("armeabi-v7a")) {
 			binaryDirName = "armeabi-v7a";
 		}else if(abi.startsWith("x86")) {

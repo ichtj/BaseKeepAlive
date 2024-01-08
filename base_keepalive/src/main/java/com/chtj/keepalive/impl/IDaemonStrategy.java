@@ -18,12 +18,13 @@ package com.chtj.keepalive.impl;
 
 import android.content.Context;
 import android.os.Build;
+import android.util.Log;
 
 import com.chtj.keepalive.DaemonConfigurations;
 import com.chtj.keepalive.strategy.DaemonStrategy21;
 import com.chtj.keepalive.strategy.DaemonStrategy22;
 import com.chtj.keepalive.strategy.DaemonStrategy23;
-import com.chtj.keepalive.strategy.DaemonStrategy24;
+import com.chtj.keepalive.strategy.DaemonStrategyLeoric;
 import com.chtj.keepalive.strategy.DaemonStrategyUnder21;
 import com.chtj.keepalive.strategy.DaemonStrategyXiaomi;
 
@@ -65,17 +66,15 @@ public interface IDaemonStrategy {
             }
             int sdk = Build.VERSION.SDK_INT;
             if (sdk >= 24) {
-                mDaemonStrategy = new DaemonStrategy24();
+                mDaemonStrategy = new DaemonStrategyLeoric();
             } else {
                 switch (sdk) {
                     case 23:
                         mDaemonStrategy = new DaemonStrategy23();
                         break;
-
                     case 22:
                         mDaemonStrategy = new DaemonStrategy22();
                         break;
-
                     case 21:
                         if ("MX4 Pro".equalsIgnoreCase(Build.MODEL)) {
                             mDaemonStrategy = new DaemonStrategyUnder21();
@@ -83,7 +82,6 @@ public interface IDaemonStrategy {
                             mDaemonStrategy = new DaemonStrategy21();
                         }
                         break;
-
                     default:
                         if (Build.MODEL != null && Build.MODEL.toLowerCase().startsWith("mi")) {
                             mDaemonStrategy = new DaemonStrategyXiaomi();

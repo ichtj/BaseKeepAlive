@@ -5,11 +5,11 @@ plugins {
 android {
     signingConfigs {
         debug {
-            storeFile file('../other/facefuture.jks')
+            storeFile file('D:\\facefuture.jks')
             storePassword 'android'
-            if (buildTypeInfo.indexOf("rk3288") != -1) {
+            if (buildTypeInfo.indexOf("rockchip") != -1) {
                 keyAlias 'rockchip'  //rk7.1.2默认签名
-            } else if (buildTypeInfo.indexOf("rkcn") != -1) {
+            } else if (buildTypeInfo.indexOf("cainiao") != -1) {
                 keyAlias 'cainiao'     //rk7.1.2 DongChenChaiNiao_Prj签名
             } else {
                 keyAlias 'freescale' //飞思卡尔默认签名
@@ -17,11 +17,11 @@ android {
             keyPassword 'android'
         }
         release {
-            storeFile file('../other/facefuture.jks')
+            storeFile file('D:\\facefuture.jks')
             storePassword 'android'
             if (buildTypeInfo.indexOf("rk3288") != -1) {
                 keyAlias 'rockchip'  //rk7.1.2默认签名
-            } else if (buildTypeInfo.indexOf("rkcn") != -1) {
+            } else if (buildTypeInfo.indexOf("cainiao") != -1) {
                 keyAlias 'cainiao'     //rk7.1.2 DongChenChaiNiao_Prj签名
             } else {
                 keyAlias 'freescale' //飞思卡尔默认签名
@@ -34,8 +34,8 @@ android {
         applicationId "com.face.keepsample"
         minSdkVersion rootProject.ext.android.minSdkVersion
         targetSdkVersion rootProject.ext.android.targetSdkVersion
-        versionCode 6
-        versionName "1.0.5"
+        versionCode 10
+        versionName "1.0.9"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         signingConfig signingConfigs.debug

@@ -27,8 +27,10 @@ import android.util.Log;
 import com.chtj.keepalive.impl.IDaemonStrategy;
 import com.chtj.keepalive.receiver.CustomizeReceiver1;
 import com.chtj.keepalive.receiver.CustomizeReceiver2;
-import com.chtj.keepalive.service.FKeepAliveService;
 import com.chtj.keepalive.service.CustomizeService2;
+import com.chtj.keepalive.service.FKeepAliveLowService;
+import com.chtj.keepalive.service.FKeepAliveHighService;
+import com.chtj.keepalive.service.GuardService;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -36,10 +38,11 @@ import java.io.FileReader;
 import java.io.IOException;
 
 public class FBaseDaemon {
-
     private static final String TAG = "FBaseDaemon";
-
     private DaemonConfigurations mConfigurations;
+    private final String DAEMON_PERMITTING_SP_FILENAME = "d_permit";
+    private final String DAEMON_PERMITTING_SP_KEY = "permitted";
+    private BufferedReader mBufferedReader;
 
     private FBaseDaemon(DaemonConfigurations configurations) {
         this.mConfigurations = configurations;
@@ -47,43 +50,21 @@ public class FBaseDaemon {
 
     public static void init(Context base) {
         DaemonConfigurations configurations;
-        int sdk = Build.VERSION.SDK_INT;
-        Log.d(TAG, "init: sdk=" + sdk);
-        if (sdk >= 24) {
-            //android 7.0以上
-            configurations = new DaemonConfigurations(
-                    new DaemonConfigurations.LeoricConfig(
-                            base.getPackageName() + ":resident",
-                            FKeepAliveService.class.getCanonicalName()),
-                    new DaemonConfigurations.LeoricConfig(
-                            "android.media",
-                            CustomizeService2.class.getCanonicalName()));
+        String packageName = base.getPackageName();
+        int sdkInt = Build.VERSION.SDK_INT;
+        boolean isHigh=sdkInt >= 24;
+        if (isHigh) {
             Reflection.unseal(base);
+            configurations = new DaemonConfigurations(new DaemonConfigurations.LeoricConfig(packageName + ":resident", FKeepAliveHighService.class.getCanonicalName()), new DaemonConfigurations.LeoricConfig("android.media", GuardService.class.getCanonicalName()));
         } else {
-            //android 7.0 以下
-            configurations = new DaemonConfigurations(
-                    new DaemonConfigurations.LeoricConfig(
-                            base.getPackageName() + ":processone",
-                            FKeepAliveService.class.getCanonicalName(),
-                            CustomizeReceiver1.class.getCanonicalName()),
-                    new DaemonConfigurations.LeoricConfig(
-                            base.getPackageName() + ":processtwo",
-                            CustomizeService2.class.getCanonicalName(),
-                            CustomizeReceiver2.class.getCanonicalName()));
+            configurations = new DaemonConfigurations(new DaemonConfigurations.LeoricConfig(packageName + ":processone", FKeepAliveLowService.class.getCanonicalName(), CustomizeReceiver1.class.getCanonicalName()), new DaemonConfigurations.LeoricConfig(packageName + ":processtwo", CustomizeService2.class.getCanonicalName(), CustomizeReceiver2.class.getCanonicalName()));
         }
         FBaseDaemon client = new FBaseDaemon(configurations);
-        client.initDaemon(base);
-        base.startService(new Intent(base, FKeepAliveService.class));
+        client.initDaemon(base, isHigh);
     }
 
 
-    private final String DAEMON_PERMITTING_SP_FILENAME = "d_permit";
-    private final String DAEMON_PERMITTING_SP_KEY = "permitted";
-
-
-    private BufferedReader mBufferedReader;
-
-    private void initDaemon(Context base) {
+    private void initDaemon(Context base, boolean isHigh) {
         if (!isDaemonPermitting(base) || mConfigurations == null) {
             return;
         }
@@ -97,6 +78,8 @@ public class FBaseDaemon {
             IDaemonStrategy.Fetcher.fetchStrategy().onInit(base);
         }
         releaseIO();
+        Intent intent=new Intent(base, isHigh ? FKeepAliveHighService.class : FKeepAliveLowService.class);
+        base.startService(intent);
     }
 
 
@@ -105,10 +88,8 @@ public class FBaseDaemon {
             int sdk = Build.VERSION.SDK_INT;
             File file = null;
             if (sdk >= 24) {
-                //android 7.0以上
                 file = new File("/proc/self/cmdline");
             } else {
-                //android 7.0以下
                 file = new File("/proc/" + android.os.Process.myPid() + "/" + "cmdline");
             }
             mBufferedReader = new BufferedReader(new FileReader(file));
