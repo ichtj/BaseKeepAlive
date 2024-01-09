@@ -46,6 +46,14 @@ public class FKeepAliveTools {
         return commandResult.result == 0 && !TextUtils.isEmpty(commandResult.successMsg) && commandResult.successMsg.contains("true");
     }
 
+    /**
+     * 一键总开关状态设置
+     */
+    public static boolean setEableStatus(boolean status) {
+        ShellUtils.CommandResult commandResult = ShellUtils.execCommand("setprop " + PROP_ALLENABLE_KEY +" "+status, true);
+        return commandResult.result == 0;
+    }
+
 
     /**
      * 添加多个保活对象

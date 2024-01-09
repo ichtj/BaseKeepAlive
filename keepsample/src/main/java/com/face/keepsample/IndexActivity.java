@@ -258,8 +258,7 @@ public class IndexActivity extends BaseActivity implements View.OnClickListener,
             }
             FileCommonTools.clearKeepLive();
             FKeepAliveTools.addMoreData(keepAliveDatas);
-            ShellUtils.CommandResult commandResult = ShellUtils.execCommand("setprop "+FKeepAliveTools.PROP_ALLENABLE_KEY+" "+isAllOpen, true);
-            KLog.d("onCheckedChanged>>result>>" + commandResult.result + ",succMeg>>" + commandResult.successMsg + ",errMeg>>" + commandResult.errorMsg);
+            FKeepAliveTools.setEableStatus(isAllOpen);
             getData();
         }
     }

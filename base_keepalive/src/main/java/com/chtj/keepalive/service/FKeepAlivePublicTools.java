@@ -23,6 +23,7 @@ public class FKeepAlivePublicTools {
     public Disposable sDisposable;
     private boolean isKeepAliveStatus = true;
     private static volatile FKeepAlivePublicTools sInstance;
+
     public static void setKeepAliveStatus(boolean keepAliveStatus) {
         instance().isKeepAliveStatus = keepAliveStatus;
     }
@@ -49,7 +50,7 @@ public class FKeepAlivePublicTools {
                     }
                     if (FKeepAliveTools.getEableStatus()) {
                         String readJson = FileCommonTools.readFileData();
-                        if(!TextUtils.isEmpty(readJson)){
+                        if (!TextUtils.isEmpty(readJson)) {
                             List<KeepAliveData> keepAliveDataList = new Gson().fromJson(readJson, new TypeToken<List<KeepAliveData>>() {
                             }.getType());
                             if (keepAliveDataList != null && keepAliveDataList.size() > 0) {

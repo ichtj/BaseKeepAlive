@@ -54,9 +54,7 @@ public class ZtKeepAliveService extends Service {
                 .subscribe(new Consumer<Long>() {
                     @Override
                     public void accept(Long aLong) throws Exception {
-                        ShellUtils.CommandResult getIsEnable = ShellUtils.execCommand("getprop "+FKeepAliveTools.PROP_ALLENABLE_KEY, true);
-                        //Log.d(TAG, "accept: getIsEnable.result="+getIsEnable.result+",succMsg="+getIsEnable.successMsg);
-                        boolean isExeu = getIsEnable.result == 0 && getIsEnable.successMsg.equals("true");
+                        boolean isExeu =FKeepAliveTools.getEableStatus();
                         boolean isExist1 = KSampleTools.isAvilible(morePkg[0]);
                         boolean isExist2 = KSampleTools.isAvilible(morePkg[1]);
                         String addPkg = "";
