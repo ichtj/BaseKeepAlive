@@ -25,7 +25,7 @@
 -keep public class com.face.baseiotcloud.api.** { *; }
 -keep public class com.face.baseiotcloud.utils.EthDataUsageUtils { *; }
 -keep public class com.face.baseiotcloud.utils.IotUtils { *; }
--keep public class com.face.baseiotcloud.utils.CrashHandler { *; }
+-keep public class com.chtj.keepalive.** { *; }
 
 #---------------------------------1.实体类---------------------------------
 
