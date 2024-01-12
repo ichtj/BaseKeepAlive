@@ -54,6 +54,27 @@ public class FKeepAliveTools {
         return commandResult.result == 0;
     }
 
+    /**
+     * 获取配置文件中的Activity保活数据
+     */
+    public static KeepAliveData getActData() {
+        List<KeepAliveData> keepAliveDataList = FKeepAliveTools.getKeepLive();
+        for (int i = 0; i < keepAliveDataList.size(); i++) {
+            if (keepAliveDataList.get(i).getType() == FKeepAliveTools.TYPE_ACTIVITY) {
+                return keepAliveDataList.get(i);
+            }
+        }
+        return null;
+    }
+
+    public static void addActivity(String pkg) {
+        FKeepAliveTools.addActivity(new KeepAliveData(pkg, FKeepAliveTools.TYPE_ACTIVITY, true));
+    }
+
+
+    public static void addService(String pkg, String serviceName) {
+        FKeepAliveTools.addService(new KeepAliveData(pkg, FKeepAliveTools.TYPE_SERVICE, serviceName, true));
+    }
 
     /**
      * 添加多个保活对象
